@@ -42,6 +42,16 @@ def add_user():
 
     return jsonify(user_schema.dump(new_record))
 
+@app.route("/user/get", methods=["GET"])
+def get_all_users():
+    all_users = db.session.query(User).all()
+    return jsonify(multiple_user_schema.dump(all_users))
+
+@app.route("/user/get/<username>", methods=["GET"])
+def get_user(username):
+    user = db.session.query(User).filter(User.username == username).first()
+    return jsonify(user_schema.dump(user))
+
 
 
 if __name__ == "__main__":
