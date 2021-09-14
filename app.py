@@ -118,6 +118,23 @@ def update_deck():
     db.session.commit()
 
     return jsonify(deck_schema.dump(deck))
+
+@app.route("/deck/add", methods=["POST"])
+def add_deck():
+    if request.content_type != "application/json":
+        return jsonify("Error: Data for add_deck must be sent as json")
+    
+    post_data = request.get_json()
+    cards = post_data.get("cards")
+    user_id = post_data.get("user_id")
+
+    new_record = Deck(name, user_id)
+    db.session.add(new_record)
+    db.session.commit()
+
+    deck = post_data
+
+    return jsonify(deck_schema.dump(deck))
     
 
 # YOU CAN CONVERT A DICTIONARY INTO JSON DO THAT FOR DECK LIST USING A SCHEMA.DUMP
