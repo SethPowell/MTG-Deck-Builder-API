@@ -5,7 +5,7 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = 
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://sumiealkhlnnri:398ea0522f6f033b3729e3825c749932628b37d1444dee6f83249a1ff23c29bf@ec2-3-230-61-252.compute-1.amazonaws.com:5432/d3301qsde5hs26"
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
@@ -14,16 +14,18 @@ CORS(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    Username = db.Column(db.String, nullable=False, unique=True)
-    Password = db.Column(db.String, nullable=False)
+    username = db.Column(db.String, nullable=False, unique=True)
+    password = db.Column(db.String, nullable=False)
+    token = db.Column(db.String, unique=True)
 
-    def __init__(self, username, password): 
+    def __init__(self, username, password, token): 
         self.username = username
         self.password = password
+        self.token = token
 
 class UserSchema(ma.Schema):
     class Meta:
-        fields = ("id", "username")
+        fields = ("id", "username", "token")
 
 user_schema = UserSchema()
 multiple_user_schema = UserSchema(many=True)
@@ -44,7 +46,7 @@ class Deck(db.Model):
 
 class DeckSchema(ma.Schema):
     class Meta:
-        fields = ("id", "commander", "cards", "user_id")
+        fields = ("id", "commander", "cards", "user_id", "views")
 
 deck_schema = DeckSchema()
 multiple_deck_schema = DeckSchema(many=True)
@@ -58,10 +60,11 @@ def add_user():
     post_data = request.get_json()
     username = post_data.get("username")
     password = post_data.get("password")
+    token = post_data.get("token")
 
     pw_hash = bcrypt.generate_password_hash(password).decode("utf-8")
 
-    new_record = User(username, pw_hash)
+    new_record = User(username, pw_hash, token)
     db.session.add(new_record)
     db.session.commit()
 
@@ -75,6 +78,11 @@ def get_all_users():
 @app.route("/user/get/<username>", methods=["GET"])
 def get_user(username):
     user = db.session.query(User).filter(User.username == username).first()
+    return jsonify(user_schema.dump(user))
+
+@app.route("/user/get/token/<token>", methods=["GET"])
+def get_user_by_token(token):
+    user = db.session.query(User).filter(User.token == token).first()
     return jsonify(user_schema.dump(user))
 
 
