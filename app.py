@@ -108,7 +108,11 @@ def verification():
 @app.route("/deck/get", methods=["GET"])
 def get_all_decks():
     all_decks = db.session.query(Deck).all()
-    return jsonify(deck_schema.dump(Deck))
+    return jsonify(multiple_deck_schema.dump(Deck))
+
+@app.route("/deck/get/<user_id>", methods=["GET"])
+def get_user_decks():
+    user_decks = db.session.query(Deck).filter(Deck.user_id == user_id).all()
 
 @app.route("/deck/update", methods=["PUT"])
 def update_deck():
