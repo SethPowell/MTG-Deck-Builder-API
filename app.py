@@ -80,10 +80,11 @@ def get_user(username):
     user = db.session.query(User).filter(User.username == username).first()
     return jsonify(user_schema.dump(user))
 
-@app.route("/user/get/<token>", methods=["GET"])
+@app.route("/user/get/token/<token>", methods=["GET"])
 def get_user_by_token(token):
     user = db.session.query(User).filter(User.token == token).first()
-    return jsonify(user_schema.dump(user.id))
+    print(user.id)
+    return jsonify(user_schema.dump(user))
 
 
 @app.route("/user/verification", methods=["POST"])
