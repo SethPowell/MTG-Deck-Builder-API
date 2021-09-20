@@ -80,10 +80,10 @@ def get_user(username):
     user = db.session.query(User).filter(User.username == username).first()
     return jsonify(user_schema.dump(user))
 
-@app.route("/user/get/token/<token>", methods=["GET"])
+@app.route("/user/get/<token>", methods=["GET"])
 def get_user_by_token(token):
     user = db.session.query(User).filter(User.token == token).first()
-    return jsonify(user_schema.dump(user))
+    return jsonify(user_schema.dump(user.id))
 
 
 @app.route("/user/verification", methods=["POST"])
@@ -108,11 +108,12 @@ def verification():
 @app.route("/deck/get", methods=["GET"])
 def get_all_decks():
     all_decks = db.session.query(Deck).all()
-    return jsonify(multiple_deck_schema.dump(Deck))
+    return jsonify(multiple_deck_schema.dump(all_decks))
 
 @app.route("/deck/get/<user_id>", methods=["GET"])
-def get_user_decks():
+def get_user_decks(user_id):
     user_decks = db.session.query(Deck).filter(Deck.user_id == user_id).all()
+    return jsonify(multiple_deck_schema.dump(user_decks))
 
 @app.route("/deck/update", methods=["PUT"])
 def update_deck():
@@ -139,8 +140,9 @@ def add_deck():
     post_data = request.get_json()
     cards = post_data.get("cards")
     user_id = post_data.get("user_id")
+    commander = post_data.get("commander")
 
-    new_record = Deck(name, user_id)
+    new_record = Deck(commander, cards, user_id)
     db.session.add(new_record)
     db.session.commit()
 
