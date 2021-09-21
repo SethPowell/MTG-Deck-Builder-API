@@ -33,12 +33,12 @@ multiple_user_schema = UserSchema(many=True)
 
 class Deck(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    Commander = db.Column(db.String, nullable=False)
-    Cards = db.Column(db.String, nullable=False)
-    Views = db.Column(db.Integer, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    commander = db.Column(db.String, nullable=False)
+    cards = db.Column(db.String, nullable=False)
+    views = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, commander, cards, views=0): 
+    def __init__(self, commander, cards, user_id, views=0): 
         self.commander = commander
         self.cards = cards
         self.views = views
@@ -142,6 +142,7 @@ def add_deck():
     cards = post_data.get("cards")
     user_id = post_data.get("user_id")
     commander = post_data.get("commander")
+    views = post_data.get("views")
 
     new_record = Deck(commander, cards, user_id)
     db.session.add(new_record)
