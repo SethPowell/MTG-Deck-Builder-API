@@ -116,8 +116,16 @@ def get_user_decks(user_id):
     user_decks = db.session.query(Deck).filter(Deck.user_id == user_id).all()
     return jsonify(multiple_deck_schema.dump(user_decks))
 
-@app.route("/deck/update", methods=["PUT"])
-def update_deck():
+@app.route("/deck/delete/<user_id>/<id>", methods=["DELETE"])
+def delete_deck(user_id, id):
+    deck = db.session.query(Deck).filter(Deck.user_id == user_id).filter(Deck.id == id).first()
+    db.session.delete(deck)
+    db.session.commit()
+
+    return jsonify(deck_schema.dump(deck))
+
+@app.route("/deck/update/<id>", methods=["PUT"])
+def update_deck(id):
     if request.content_type != "application/json":
         return jsonify("Error: Data must be sent as json")
 
@@ -151,9 +159,6 @@ def add_deck():
     deck = post_data
 
     return jsonify(deck_schema.dump(deck))
-    
-
-# YOU CAN CONVERT A DICTIONARY INTO JSON DO THAT FOR DECK LIST USING A SCHEMA.DUMP
 
 if __name__ == "__main__":
     app.run(debug=True)
