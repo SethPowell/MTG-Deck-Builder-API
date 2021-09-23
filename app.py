@@ -123,7 +123,7 @@ def get_user_decks(user_id):
 
 @app.route("/deck/get/<user_id>/<id>", methods=["GET"])
 def get_user_deck(user_id, id):
-   deck = db.session.query(Deck).filter(Deck.user_id == user_id).filter(Deck.id == id).first()
+    deck = db.session.query(Deck).filter(Deck.user_id == user_id).filter(Deck.id == id).first()
     return jsonify(deck_schema.dump(user_decks))
 
 @app.route("/deck/delete/<user_id>/<id>", methods=["DELETE"])
