@@ -129,11 +129,6 @@ def delete_deck(user_id, id):
 
     return jsonify(deck_schema.dump(deck))
 
-@app.route("/deck/get/<user_id>/<id>", methods=["GET"])
-def delete_deck(user_id, id):
-    deck = db.session.query(Deck).filter(Deck.user_id == user_id).filter(Deck.id == id).first()
-    return jsonify(deck_schema.dump(deck))
-
 @app.route("/deck/update/<id>", methods=["PUT"])
 def update_deck(id):
     if request.content_type != "application/json":
